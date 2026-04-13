@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 import FilterBar from "@/components/forms/FilterBar";
 import SeachBar from "@/components/forms/SearchBar";
@@ -23,10 +25,13 @@ export default function RecipesPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (!searchParams) return;
-    setSearchQuery(searchParams.get("search") || "");
-    setCuisineFilter(searchParams.get("cuisine") || "");
-  }, [searchParams]);
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    setSearchQuery(params.get("search") || "");
+    setCuisineFilter(params.get("cuisine") || "");
+  }, []);
 
   const router = useRouter();
 

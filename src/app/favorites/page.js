@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeCardSkeleton from "@/components/Ui/RecipeCardSkeleton";
