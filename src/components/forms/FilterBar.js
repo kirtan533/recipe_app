@@ -7,6 +7,10 @@ export default function FilterBar({ currentCuisine = "" }) {
   const [selectedCuisine, setSelectedCuisine] = useState(currentCuisine);
   const router = useRouter();
 
+  useEffect(() => {
+    setSelectedCuisine(currentCuisine);
+  }, [currentCuisine]);
+
   const cuisine = [
     "All",
     "Italian",
