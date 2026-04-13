@@ -6,7 +6,6 @@ import FilterBar from "@/components/forms/FilterBar";
 import SeachBar from "@/components/forms/SearchBar";
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeSkeletonGrid from "@/components/Ui/RecipeSkeletonGrid";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,8 +20,6 @@ export default function RecipesPage() {
 
   const [visibleCount, setVisibleCount] = useState(9);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (typeof window === "undefined") return;

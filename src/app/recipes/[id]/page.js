@@ -1,11 +1,12 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import Button from "@/components/Ui/Button";
 import Image from "next/image";
 import LoadingSpinner from "@/components/Ui/LoadingSpinner";
 import { TfiTimer } from "react-icons/tfi";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Rating from "@/components/recipes/Rating";
 import FavoriteButton from "@/components/recipes/FavoriteButton";
@@ -14,13 +15,19 @@ export default function SingleRecipePage() {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [decodedFrom, setDecodedFrom] = useState(null);
 
   const params = useParams();
   const id = params.id;
 
-  const searchParams = useSearchParams();
-  const from = searchParams.get("from");
-  const decodedFrom = from ? decodeURIComponent(from) : null;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+
+    setDecodedFrom(from ? decodeURIComponent(from) : null);
+  }, []);
 
   let backHref = "/recipes";
   let backText = "← Back to Recipes";
