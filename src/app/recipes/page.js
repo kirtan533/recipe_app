@@ -14,13 +14,19 @@ export default function RecipesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [localSearch, setLocalSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cuisineFilter, setCuisineFilter] = useState("");
 
   const [visibleCount, setVisibleCount] = useState(9);
   const [loadingMore, setLoadingMore] = useState(false);
 
   const searchParams = useSearchParams();
-  const searchQuery = searchParams.get("search") || "";
-  const cuisineFilter = searchParams.get("cuisine") || "";
+
+  useEffect(() => {
+    if (!searchParams) return;
+    setSearchQuery(searchParams.get("search") || "");
+    setCuisineFilter(searchParams.get("cuisine") || "");
+  }, [searchParams]);
 
   const router = useRouter();
 
@@ -55,7 +61,7 @@ export default function RecipesPage() {
         throw new Error(`Failed to fetch recipes`);
       }
       const data = await response.json();
-      setRecipes(data.recipes);
+      setRecipes(data?.recipes || []);
       setLoading(false);
     } catch (error) {
       setError(error.message);
@@ -78,7 +84,7 @@ export default function RecipesPage() {
     if (cuisineFilter) {
       filtered = filtered.filter(
         (recipe) =>
-          recipe.cuisine.toLowerCase() === cuisineFilter.toLowerCase(),
+          recipe.cuisine?.toLowerCase() === cuisineFilter.toLowerCase(),
       );
     }
     setFilteredRecipes(filtered);
