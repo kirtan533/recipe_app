@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeCardSkeleton from "@/components/Ui/RecipeCardSkeleton";
@@ -17,11 +18,20 @@ export default function FavoritePage() {
     fetchAllRecipes();
   }, []);
 
+  const getFavoriteFromStorage = () => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(localStorage.getItem("favorites") || "[]");
+    } catch {
+      return [];
+    }
+  };
+
   useEffect(() => {
     if (allRecipes.length > 0) {
       loadFavorites();
     } else {
-      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      const favorites = getFavoriteFromStorage();
       setFavoriteRecipes([]);
       setLoading(false);
     }
@@ -51,6 +61,8 @@ export default function FavoritePage() {
   };
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const user = localStorage.getItem("user");
     if (!user) {
       router.push("/login");

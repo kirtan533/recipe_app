@@ -18,6 +18,8 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const user = localStorage.getItem("user");
     if (!user) {
       router.push("/login");
