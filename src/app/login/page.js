@@ -13,10 +13,14 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    document.body.classList.add("hide-footer");
+    if (typeof document !== "undefined") {
+      document.body.classList.add("hide-footer");
+    }
 
     return () => {
-      document.body.classList.remove("hide-footer");
+      if (typeof document !== "undefined") {
+        document.body.classList.remove("hide-footer");
+      }
     };
   }, []);
 
