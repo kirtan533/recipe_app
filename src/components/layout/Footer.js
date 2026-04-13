@@ -3,7 +3,10 @@ import { FaInstagram } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 dark:bg-gray-950 text-white mt-12 transition-colors duration-300">
+    <footer
+      id="app-footer"
+      className="bg-gray-800 dark:bg-gray-950 text-white mt-12 transition-colors duration-300"
+    >
       <div className="container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-3 gap-8">
           <div>

@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const {
@@ -10,6 +11,14 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm();
   const router = useRouter();
+
+  useEffect(() => {
+    document.body.classList.add("hide-footer");
+
+    return () => {
+      document.body.classList.remove("hide-footer");
+    };
+  }, []);
 
   const onSubmit = (data) => {
     localStorage.setItem("user", JSON.stringify(data));
