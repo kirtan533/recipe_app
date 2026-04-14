@@ -22,6 +22,11 @@
   }
 }
 
+html,
+body {
+  scroll-behavior: smooth;
+}
+
 .hide-footer #app-footer {
   display: none;
 }
