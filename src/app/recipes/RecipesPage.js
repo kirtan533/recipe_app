@@ -117,7 +117,7 @@ export default function RecipesPage() {
 
   return (
     <>
-      <div className="container mx-auto px-4 overflow-x-hidden">
+      <div>
         <h1 className="text-3xl font-bold mb-8">All Recipes</h1>
         <div className="mb-6">
           <SeachBar
