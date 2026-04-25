@@ -1,6 +1,8 @@
 "use client";
 
-import LoadingSpinner from "@/components/Ui/LoadingSpinner";
+import CategorySkeleton from "@/components/Ui/categorySkeleton";
+import { auth } from "@/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,12 +14,12 @@ export default function CategoriesPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const user = localStorage.getItem("user");
-    if (!user) {
-      router.push("/login");
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -34,19 +36,22 @@ export default function CategoriesPage() {
       });
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <CategorySkeleton />;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Recipe Categories</h1>
+    <div className="container mx-auto px-4 py-8 text-gray-900 dark:text-gray-100">
+      <h1 className="text-3xl font-bold mb-8 tracking-tight">
+        Recipe Categories
+      </h1>
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {categories.map((cuisine) => (
           <Link
             key={cuisine}
             href={`/categories/${encodeURIComponent(cuisine)}`}
-            className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 text-center hover:shadow-lg transition"
+            className="bg-white dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 shadow-md rounded-xl p-6 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
           >
-            <span className="text-xl font-medium text-gray-800 dark:text-gray-200">
+            <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
               {cuisine}
             </span>
           </Link>

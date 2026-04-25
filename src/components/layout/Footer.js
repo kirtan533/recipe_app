@@ -1,7 +1,15 @@
+"use client";
 import { TfiFacebook } from "react-icons/tfi";
 import { FaInstagram } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname === "/login" || pathname === "/signup") {
+    return null;
+  }
+
   return (
     <footer
       id="app-footer"

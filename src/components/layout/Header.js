@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GoSearch } from "react-icons/go";
 import DarkModeToggle from "../Ui/DarkModeToggle";
+import { useAuth } from "@/context/authContext";
+import { logout } from "@/services/auth";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
 
+  const { user } = useAuth();
   const pathName = usePathname();
   const router = useRouter();
 
@@ -20,20 +22,8 @@ export default function Header() {
     { name: "Categories", href: "/categories" },
   ];
 
-  useEffect(() => {
-    const checkUser = () => {
-      const stored = localStorage.getItem("user");
-      setUser(stored ? JSON.parse(stored) : null);
-    };
-    checkUser();
-    window.addEventListener("userChanged", checkUser);
-    return () => window.removeEventListener("userChanged", checkUser);
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem("user");
-    window.dispatchEvent(new Event("userChanged"));
-    setUser(null);
+  const handleLogout = async () => {
+    await logout();
     setIsMenuOpen(false);
     router.push("/login");
   };
@@ -41,7 +31,7 @@ export default function Header() {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-300">
       <nav className="container mx-auto px-4 py-4">
-        <div className="flex justify-start items-center">
+        <div className="flex justify-between items-center">
           <Link
             href="/"
             className="text-2xl font-bold text-red-500 dark:text-red-400 mr-5"
@@ -51,8 +41,8 @@ export default function Header() {
               RecipeApp
             </span>
           </Link>
-          <div className="hidden md:flex items-center justify-between w-full">
-            <div className="flex space-x-8 items-center">
+          <div className="hidden md:flex items-center w-full ml-6">
+            <div className="flex space-x-4 lg:space-x-8 items-center">
               {navLink.map((link) => (
                 <Link
                   key={link.href}
@@ -74,24 +64,26 @@ export default function Header() {
                     : "text-gray-600 dark:text-gray-300 hover:text-red-500 dark:hover:text-red-400"
                 }`}
               >
-                ❤️ Favorites
+                Favorites
               </Link>
               <DarkModeToggle />
             </div>
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex items-center gap-2 lg:gap-3">
               {user ? (
                 <>
-                  <p className="text-sm text-gray-400">{user.email}</p>
+                  <p className="text-sm text-gray-400 truncate max-w-[120px] lg:max-w-[180px]">
+                    {user.email}
+                  </p>
                   <button
-                    onClick={logout}
-                    className="bg-white text-black px-4 py-2 rounded cursor-pointer"
+                    onClick={handleLogout}
+                    className="bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg text-sm cursor-pointer"
                   >
                     Logout
                   </button>
                 </>
               ) : (
                 <Link href="/login" onClick={() => setIsMenuOpen(false)}>
-                  <button className="bg-white text-black px-4 py-2 rounded cursor-pointer">
+                  <button className="bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg text-sm cursor-pointer">
                     Login
                   </button>
                 </Link>
@@ -130,7 +122,7 @@ export default function Header() {
               }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              ❤️ Favorites
+              Favorites
             </Link>
             <div className="py-2">
               <DarkModeToggle />
@@ -141,10 +133,10 @@ export default function Header() {
                 <p className="text-sm text-gray-400 truncate">{user.email}</p>
                 <button
                   onClick={() => {
-                    logout();
+                    handleLogout();
                     setIsMenuOpen(false);
                   }}
-                  className="w-full bg-white text-black py-2 rounded cursor-pointer font-medium"
+                  className="w-full bg-white  text-black py-2 rounded cursor-pointer font-medium"
                 >
                   Logout
                 </button>

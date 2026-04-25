@@ -6,6 +6,8 @@ import FilterBar from "@/components/forms/FilterBar";
 import SeachBar from "@/components/forms/SearchBar";
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeSkeletonGrid from "@/components/Ui/RecipeSkeletonGrid";
+import { auth } from "@/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -31,12 +33,12 @@ export default function RecipesPage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const user = localStorage.getItem("user");
-    if (!user) {
-      router.push("/login");
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {

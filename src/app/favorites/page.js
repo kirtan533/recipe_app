@@ -2,6 +2,8 @@
 
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeCardSkeleton from "@/components/Ui/RecipeCardSkeleton";
+import { auth } from "@/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -60,12 +62,12 @@ export default function FavoritePage() {
   };
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const user = localStorage.getItem("user");
-    if (!user) {
-      router.push("/login");
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {

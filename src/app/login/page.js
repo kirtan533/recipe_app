@@ -3,14 +3,17 @@
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { login } from "@/services/auth";
 
 export default function LoginPage() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitting },
   } = useForm();
-  const router = useRouter();
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -24,32 +27,40 @@ export default function LoginPage() {
     };
   }, []);
 
-  const onSubmit = (data) => {
-    localStorage.setItem("user", JSON.stringify(data));
-    window.dispatchEvent(new Event("userChanged"));
-    router.push("/");
+  const handleLogin = async (data) => {
+    try {
+      await login(data.email, data.password);
+      toast.success("Login successful 🎉");
+      reset();
+      router.push("/");
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
       <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-6 rounded-2xl shadow-md w-full max-w-sm"
+        onSubmit={handleSubmit(handleLogin)}
+        className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md w-full max-w-sm"
       >
-        <h2 className="text-xl font-bold mb-4 dark:text-black">Login</h2>
+        <h2 className="text-xl font-bold mb-4 dark:text-white">Login</h2>
 
         <input
           {...register("email", {
             required: "Email is required",
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email Format",
+              message: "Invalid email format",
             },
           })}
           placeholder="Email"
-          className="w-full p-2 mb-3 border rounded-lg dark:placeholder:text-black placeholder:text-black dark:text-black"
+          className="w-full p-2 mb-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 placeholder-black dark:text-white dark:placeholder-gray-400"
         />
-        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
+        )}
+
         <input
           {...register("password", {
             required: "Password required",
@@ -57,21 +68,29 @@ export default function LoginPage() {
               value: 6,
               message: "Min 6 characters",
             },
-            pattern: {
-              value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-              message: "Password must contain letters and numbers",
-            },
           })}
           type="password"
           placeholder="Password"
-          className="w-full p-2 mb-4 border rounded-lg dark:placeholder:text-black placeholder:text-black dark:text-black"
+          className="w-full p-2 mb-4 border rounded-lg dark:bg-gray-700 placeholder-black dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
         />
         {errors.password && (
-          <p className="text-red-500">{errors.password.message}</p>
+          <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
         )}
-        <button className="w-full bg-black text-white py-2 rounded-lg hover:bg-gray-800 cursor-pointer">
-          Login
+
+        <button
+          className="w-full bg-black dark:bg-white dark:text-black text-white py-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 cursor-pointer transition"
+          disabled={isSubmitting}
+          type="submit"
+        >
+          {isSubmitting ? "Logging in..." : "Login"}
         </button>
+
+        <p
+          className="mt-3 text-sm text-center cursor-pointer text-blue-500 dark:text-blue-400"
+          onClick={() => router.push("/signup")}
+        >
+          New user? Signup
+        </p>
       </form>
     </div>
   );

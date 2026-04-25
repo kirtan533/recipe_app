@@ -3,13 +3,13 @@ export const dynamic = "force-dynamic";
 
 import Button from "@/components/Ui/Button";
 import Image from "next/image";
-import LoadingSpinner from "@/components/Ui/LoadingSpinner";
 import { TfiTimer } from "react-icons/tfi";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Rating from "@/components/recipes/Rating";
 import FavoriteButton from "@/components/recipes/FavoriteButton";
+import RecipeSkeleton from "@/components/Ui/recipeSkeleton";
 
 export default function SingleRecipePage() {
   const [recipe, setRecipe] = useState(null);
@@ -60,7 +60,7 @@ export default function SingleRecipePage() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <RecipeSkeleton />;
   if (error)
     return (
       <div className="text-center py-12">
@@ -74,14 +74,14 @@ export default function SingleRecipePage() {
     );
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 text-gray-900 dark:text-gray-100">
       <div className="mb-6">
         <Link href={backHref} className="text-red-500 hover:underline">
           {backText}
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800/80 backdrop-blur rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <Image
           src={recipe.image}
           alt={recipe.name}
@@ -93,12 +93,14 @@ export default function SingleRecipePage() {
         />
         <div className="p-8">
           <div className="flex items-center">
-            <h1 className="text-4xl font-bold mb-4">{recipe.name}</h1>
+            <h1 className="text-4xl font-bold mb-4 tracking-tight">
+              {recipe.name}
+            </h1>
             <span className="ml-3 mb-1">
               <FavoriteButton recipeId={recipe.id} />
             </span>
           </div>
-          <div className="flex flex-wrap gap-4 mb-6 text-gray-600 dark:text-gray-300">
+          <div className="flex flex-wrap gap-4 mb-6 text-gray-600 dark:text-gray-400 text-sm">
             <span className="flex items-center">
               <TfiTimer className="mr-2" /> Prep: {recipe.prepTimeMinutes} mins
             </span>
@@ -127,7 +129,9 @@ export default function SingleRecipePage() {
             ))}
           </div>
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-3">Ingredients</h2>
+            <h2 className="text-2xl font-semibold mb-3 border-b border-gray-200 dark:border-gray-700 pb-1">
+              Ingredients
+            </h2>
             <ul className="list-disc list-inside space-y-1">
               {recipe.ingredients?.map((ingredient, index) => (
                 <li key={index} className="text-gray-700 dark:text-gray-300">
@@ -140,7 +144,10 @@ export default function SingleRecipePage() {
             <h2 className="text-2xl font-bold mb-3">Instructions</h2>
             <ol className="list-decimal list-inside space-y-2">
               {recipe.instructions?.map((step, index) => (
-                <li key={index} className="text-gray-700 dark:text-gray-300">
+                <li
+                  key={index}
+                  className="text-gray-700 dark:text-gray-300 transition-all duration-300 hover:shadow-2xl"
+                >
                   {step}
                 </li>
               ))}

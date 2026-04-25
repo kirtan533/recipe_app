@@ -3,6 +3,7 @@
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import Button from "@/components/Ui/Button";
 import RecipeSkeletonGrid from "@/components/Ui/RecipeSkeletonGrid";
+import { useAuth } from "@/context/authContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,6 +12,7 @@ export default function HomePage() {
   const [featuredRecipes, setFeaturedRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -18,13 +20,10 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const user = localStorage.getItem("user");
     if (!user) {
       router.push("/login");
     }
-  }, []);
+  }, [user]);
 
   const fetchFeaturedRecipes = async () => {
     try {
