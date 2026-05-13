@@ -1,26 +1,12 @@
 "use client";
 
 import CategorySkeleton from "@/components/Ui/categorySkeleton";
-import { auth } from "@/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     fetch(`https://dummyjson.com/recipes?limit=100`)

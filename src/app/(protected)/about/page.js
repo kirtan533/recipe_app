@@ -1,22 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebase/config";
-
 export default function AboutPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
   return (
     <div className="container mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-6 text-center">About RecipeApp</h1>

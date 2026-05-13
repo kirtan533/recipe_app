@@ -2,18 +2,13 @@
 
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeCardSkeleton from "@/components/Ui/RecipeCardSkeleton";
-import { auth } from "@/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function FavoritePage() {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allRecipes, setAllRecipes] = useState([]);
-
-  const router = useRouter();
 
   useEffect(() => {
     fetchAllRecipes();
@@ -60,15 +55,6 @@ export default function FavoritePage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   useEffect(() => {
     const handleStorageChange = () => {

@@ -6,9 +6,7 @@ import FilterBar from "@/components/forms/FilterBar";
 import SeachBar from "@/components/forms/SearchBar";
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeSkeletonGrid from "@/components/Ui/RecipeSkeletonGrid";
-import { auth } from "@/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RecipesPage() {
@@ -21,8 +19,6 @@ export default function RecipesPage() {
   const [visibleCount, setVisibleCount] = useState(9);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const router = useRouter();
-
   const searchParams = useSearchParams();
 
   const searchQuery = searchParams.get("search") || "";
@@ -30,15 +26,6 @@ export default function RecipesPage() {
 
   useEffect(() => {
     fetchRecipes();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push("/login");
-      }
-    });
-    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
