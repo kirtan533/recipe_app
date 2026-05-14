@@ -32,7 +32,18 @@ export default function LoginPage() {
       await login(data.email, data.password);
       toast.success("Login successful 🎉");
       reset();
-      router.push("/");
+      router.replace("/");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    try {
+      await login("demo@gmail.com", "123456");
+      toast.success("Demo login successful 🚀");
+      reset();
+      router.replace("/");
     } catch (error) {
       toast.error(error.message);
     }
@@ -90,6 +101,16 @@ export default function LoginPage() {
           onClick={() => router.push("/signup")}
         >
           New user? Signup
+        </p>
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          className="w-full mt-3 border py-2 rounded-lg hover:bg-gray-100 dark:hover:text-gray-400 transition font-medium"
+        >
+          Login as Demo User
+        </button>
+        <p className="text-[.8rem] text-gray-500 mt-2 text-center font-semibold">
+          Use demo account for quick access
         </p>
       </form>
     </div>
