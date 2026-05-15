@@ -1,10 +1,22 @@
-import { Suspense } from "react";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import RecipesPage from "./RecipesPage";
+import { fetchRecipes } from "@/libs/fetchRecipes";
 
-export default function Page() {
+export default async function Page({ searchParams }) {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["recipes"],
+    queryFn: fetchRecipes,
+  });
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <RecipesPage />
-    </Suspense>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <RecipesPage searchParams={searchParams} />
+    </HydrationBoundary>
   );
 }

@@ -6,56 +6,31 @@ import FilterBar from "@/components/forms/FilterBar";
 import SeachBar from "@/components/forms/SearchBar";
 import RecipeGrid from "@/components/recipes/RecipeGrid";
 import RecipeSkeletonGrid from "@/components/Ui/RecipeSkeletonGrid";
+import { fetchRecipes } from "@/libs/fetchRecipes";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState([]);
-  const [filteredRecipes, setFilteredRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [localSearch, setLocalSearch] = useState("");
-
-  const [visibleCount, setVisibleCount] = useState(9);
-  const [loadingMore, setLoadingMore] = useState(false);
-
   const searchParams = useSearchParams();
-
   const searchQuery = searchParams.get("search") || "";
   const cuisineFilter = searchParams.get("cuisine") || "";
 
-  useEffect(() => {
-    fetchRecipes();
-  }, []);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [visibleCount, setVisibleCount] = useState(9);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  useEffect(() => {
-    if (searchQuery) {
-      setLocalSearch(searchQuery);
-    }
-  }, [searchQuery]);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["recipes"],
+    queryFn: fetchRecipes,
+    staleTime: 1000 * 60 * 5,
+  });
 
-  useEffect(() => {
-    filterRecipes();
-  }, [recipes, localSearch, cuisineFilter]);
+  const recipes = data?.recipes || [];
 
-  const fetchRecipes = async () => {
-    try {
-      const response = await fetch(`https://dummyjson.com/recipes?limit=30`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch recipes`);
-      }
-      const data = await response.json();
-      setRecipes(data?.recipes || []);
-      setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const filterRecipes = () => {
+  const filteredRecipes = useMemo(() => {
     let filtered = [...recipes];
+
     if (localSearch) {
       filtered = filtered.filter(
         (recipe) =>
@@ -72,12 +47,8 @@ export default function RecipesPage() {
           recipe.cuisine?.toLowerCase() === cuisineFilter.toLowerCase(),
       );
     }
-    setFilteredRecipes(filtered);
-  };
-
-  const handleSearchChange = (value) => {
-    setLocalSearch(value);
-  };
+    return filtered;
+  }, [recipes, localSearch, cuisineFilter]);
 
   const loadMore = () => {
     setLoadingMore(true);
@@ -87,13 +58,15 @@ export default function RecipesPage() {
     }, 500);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <RecipeSkeletonGrid />;
   }
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-500">Error: {error}</p>
+        <p className="text-red-500">
+          {error.message || "something went wrong!"}
+        </p>
         <button
           onClick={fetchRecipes}
           className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
@@ -111,7 +84,7 @@ export default function RecipesPage() {
         <div className="mb-6">
           <SeachBar
             initialSearch={localSearch}
-            onSearchChange={handleSearchChange}
+            onSearchChange={setLocalSearch}
           />
         </div>
 
